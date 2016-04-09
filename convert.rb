@@ -16,15 +16,33 @@
 
 require 'csv'
 require 'date'
+
+
+def clean_value(value, default)
+  return default if value.nil? || (value.is_a?(String) && value.empty?)
+  value
+end
+
+user_first_name = "Patrick"
+user_last_name = "Brown"
+
 fname = $*.delete_at(0)
 fout = fname.gsub(".csv", "_harvest.csv")
 output = ["date, client, project, task, note, hours, first name, last name".split(",")]
 c = CSV.open(fname)
 c.drop(1).each do |row|
 	tmp = row[11].split(":")
-	duration = sprintf('%0.2f',tmp[0].to_f + (tmp[1].to_f/60.0) + (tmp[2].to_f/60.0))
+
+	duration = sprintf('%0.2f',tmp[0].to_f + (tmp[1].to_f/60.0) + (tmp[2].to_f/3600.0))
 	date = DateTime.parse(row[7]).strftime("%Y-%m-%d")
-	output << [date, row[2], row[3], row[4], row[5], duration, row[0].split(" ")[0], row[0].split(" ")[1]]
+  output << [date, 
+             clean_value(row[2], "No Client"), 
+             clean_value(row[3], "No Project"), 
+             clean_value(row[4], "No Task"),
+             row[5], 
+             duration, 
+             user_first_name, 
+             user_last_name]
 end
 
 `rm #{fout}`
