@@ -23,10 +23,10 @@ def clean_value(value, default)
   value
 end
 
-user_first_name = "Patrick"
-user_last_name = "Brown"
+fname = $*[0]
+user_first_name = $*[1]
+user_last_name = $*[2]
 
-fname = $*.delete_at(0)
 fout = fname.gsub(".csv", "_harvest.csv")
 output = ["date, client, project, task, note, hours, first name, last name".split(",")]
 c = CSV.open(fname)
