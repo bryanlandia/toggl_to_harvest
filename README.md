@@ -4,20 +4,27 @@ This is a very simple import tool for converting Toggl http://toggl.com time
 entry CSV exports to a format that you can import into Harvest
 http://www.getharvest.com/
 
-Toggl should dump record that look similar to:
+## Formats
+#### Toggl CSV:
 
-    0-User,1-Client,2-Project,3-Description,4-Billable,5-Start time,6-End time,7-Duration,8-Tags,9-Task,10-Amount (USD)
-    Rain48,CatalogChoice,catalogchoice.org,braintree,Yes,06/21/2011 14:43,06/21/2011 17:28,02:45:20,"","",220.44
+    User,Email,Client,Project,Task,Description,Billable,Start date,Start time,End date,End time,Duration,Tags,Amount (USD)
+    DevDude,dev@dude.com,My Client,My Project,A Task,"A Description",No,2016-01-1,12:12:12,2016-01-1,13:24:24,01:12:12,A Tag,3.50
+    DevDude,dev@dude.com,My Client,My Project,A Task,"A Description",No,2016-01-1,12:12:12,2016-01-1,13:24:24,01:12:12,A Tag,3.50
 
-To use this simply:
+#### Generated Harvest CSV:
 
-    git clone git://github.com/wiseleyb/toggl_to_harvest.git
-    cd toggl_to_harvest
-    ruby convert.rb _toggl-csv-file_
+    date, client, project, task, note, hours, first name, last name
+    2016-01-01,My Client,My Project,A Task,A Description,1.20,Dev,Dude
+    2016-01-01,My Client,My Project,A Task,A Description,1.20,Dev,Dude
 
-It will spit out a harvest compatible file with _harvest.csv.  Example:
 
-    ruby convert.rb toggltime.csv
-    >> toggltime_harvest.csv
+## Installation & Usage
 
-If you have any questions:  wiseleyb@gmail.com
+```bash
+git clone git://github.com/wiseleyb/toggl_to_harvest.git
+cd toggl_to_harvest
+```
+
+**Syntax:** `ruby convert.rb [toggl_csv] [user_first_name] [user_last_name]`
+
+**Example:** `ruby convert.rb toggl_entries.csv John Doe` generates `toggle_entries_harvest.csv`
