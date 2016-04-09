@@ -11,24 +11,43 @@
 # Last name
 
 # Toggl format
-# 0-User,1-Client,2-Project,3-Description,4-Billable,5-Start time,6-End time,7-Duration,8-Tags,9-Task,10-Amount (USD)
-# Rain48,CatalogChoice,catalogchoice.org,braintree,Yes,06/21/2011 14:43,06/21/2011 17:28,02:45:20,"","",220.44
+# 0-User,1-Email,2-Client,3-Project,4-Task,5-Description,6-Billable,7-Start date,8-Start time,9-End date,10-End time,11-Duration,12-Tags,13-Amount (USD)
+# Bryan Wilson,bryan@woollyandwise.com,,YES! Magazine,,Fix tablet display issues,Yes,2015-08-07,15:20:32,2015-08-07,15:20:34,00:00:02,,0.00
 
 require 'csv'
 require 'date'
-fname = $*.delete_at(0)
+
+
+def clean_value(value, default)
+  return default if value.nil? || (value.is_a?(String) && value.empty?)
+  value
+end
+
+fname = $*[0]
+user_first_name = $*[1]
+user_last_name = $*[2]
+
 fout = fname.gsub(".csv", "_harvest.csv")
 output = ["date, client, project, task, note, hours, first name, last name".split(",")]
-CSV.foreach(fname) do |row|
-  unless row[0] == "User"
-    tmp = row[7].split(":")
-    time = sprintf('%0.2f',tmp[0].to_f + (tmp[1].to_f/60.0))
-    date = DateTime.parse(row[5]).strftime("%Y-%m-%d")
-    output << [date, row[1], row[2], row[3], "", time, "Ben", "Wiseley"]
-  end
+c = CSV.open(fname)
+c.drop(1).each do |row|
+	tmp = row[11].split(":")
+
+	duration = sprintf('%0.2f',tmp[0].to_f + (tmp[1].to_f/60.0) + (tmp[2].to_f/3600.0))
+	date = DateTime.parse(row[7]).strftime("%Y-%m-%d")
+  output << [date, 
+             clean_value(row[2], "No Client"), 
+             clean_value(row[3], "No Project"), 
+             clean_value(row[4], "No Task"),
+             row[5], 
+             duration, 
+             user_first_name, 
+             user_last_name]
 end
-`touch #{fout}`
+
 `rm #{fout}`
+`touch #{fout}`
+
 CSV.open(fout, "wb") do |csv|
   output.each do |row|
     csv << row
